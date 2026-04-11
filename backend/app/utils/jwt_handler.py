@@ -6,7 +6,7 @@ import os
 
 load_dotenv()
 
-JWT_SECRET = os.getenv("ACCESS_TOKEN_SECRET")
+JWT_SECRET = os.getenv("ACCESS_TOKEN_SECRET") or os.getenv("JWT_SECRET") or "utn2026"
 JWT_ALGORITHM = "HS256"
 
 def signJWT(user_id: str, role: str = "user") -> Dict[str, str]:
