@@ -266,6 +266,7 @@ async def get_me(current_user: User = Depends(get_current_user), db: Session = D
         "is_premium": current_user.is_premium,
         "subscription_id": current_user.subscription_id,
         "contador_ia": current_user.contador_ia,
+        "experience_level": current_user.experience_level,
         "portfolio": portfolio
     }
     return user_dict

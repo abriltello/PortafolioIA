@@ -18,7 +18,7 @@ interface PlanStatusProps {
 }
 
 /**
- * 📊 Componente que muestra el estado del plan del usuario
+ * Componente que muestra el estado del plan del usuario
  * Información sobre límites, consumo y estado de suscripción
  */
 const PlanStatus: React.FC<PlanStatusProps> = ({ refreshTrigger = 0 }) => {
@@ -33,9 +33,9 @@ const PlanStatus: React.FC<PlanStatusProps> = ({ refreshTrigger = 0 }) => {
         setCargando(true);
         const respuesta = await api.get('/usuarios/mi-plan');
         setPlanInfo(respuesta.data);
-        console.log('📋 Plan info cargado:', respuesta.data);
+        console.log('Plan info cargado:', respuesta.data);
       } catch (err: any) {
-        console.error('❌ Error cargando plan:', err);
+        console.error('Error cargando plan:', err);
         setError('No se pudo cargar la información del plan');
       } finally {
         setCargando(false);
@@ -56,7 +56,7 @@ const PlanStatus: React.FC<PlanStatusProps> = ({ refreshTrigger = 0 }) => {
   if (error) {
     return (
       <div className="bg-red-100 border-2 border-red-400 text-red-800 rounded-lg p-4">
-        ❌ {error}
+        <p><strong>Error:</strong> {error}</p>
       </div>
     );
   }
@@ -81,7 +81,7 @@ const PlanStatus: React.FC<PlanStatusProps> = ({ refreshTrigger = 0 }) => {
       {/* Encabezado con plan */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <span className={`text-3xl ${planInfo.es_premium ? '⭐' : '🆓'}`} />
+          <i className="fas fa-crown text-3xl text-indigo-600"></i>
           <div>
             <h3 className="font-bold text-lg">
               {planInfo.es_premium ? 'Plan Premium' : 'Plan Gratuito'}
@@ -127,7 +127,7 @@ const PlanStatus: React.FC<PlanStatusProps> = ({ refreshTrigger = 0 }) => {
       {planInfo.es_premium && (
         <div className="bg-green-100 border-l-4 border-green-500 rounded p-3">
           <p className="text-sm font-semibold text-green-800">
-            ✅ Acceso ilimitado a todas las funciones sin restricciones
+            Acceso ilimitado a todas las funciones sin restricciones
           </p>
         </div>
       )}

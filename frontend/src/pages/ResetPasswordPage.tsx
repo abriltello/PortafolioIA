@@ -118,7 +118,7 @@ const ResetPasswordPage: React.FC = () => {
 
         {success ? (
           <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
-            <p className="text-green-700 font-medium mb-2">✅ {message}</p>
+            <p className="text-green-700 font-medium mb-2">{message}</p>
             <p className="text-sm text-green-600">Serás redirigido en breve...</p>
           </div>
         ) : (

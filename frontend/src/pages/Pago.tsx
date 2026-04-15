@@ -80,7 +80,9 @@ const Pago: React.FC<PagoProps> = ({ onSubscribeSuccess }) => {
       {success ? (
         <div className="max-w-md w-full text-center">
           <div className="bg-white rounded-2xl p-8 shadow-lg">
-            <div className="text-5xl mb-4">✅</div>
+            <div className="text-5xl mb-4" style={{ background: 'linear-gradient(45deg, #10b981, #059669)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              <i className="fas fa-check-circle"></i>
+            </div>
             <h2 className="text-2xl font-bold text-[var(--color-text-light)] mb-2">¡Suscripto con éxito!</h2>
             <p className="text-[var(--color-text-muted)] mb-4">Redirigiendo al inicio automáticamente...</p>
             <div className="text-sm text-[var(--color-text-muted)]">Espera 3 segundos...</div>

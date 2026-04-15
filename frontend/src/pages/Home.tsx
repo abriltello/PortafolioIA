@@ -78,7 +78,9 @@ const Home: React.FC<HomeProps> = ({ onOpenAuthModalLogin, onOpenAuthModalRegist
           {/* Features preview */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-              <div className="text-3xl mb-2">📊</div>
+              <div className="text-3xl mb-2" style={{ background: 'linear-gradient(45deg, #0056b3, #1e88e5)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                <i className="fas fa-chart-pie"></i>
+              </div>
               <h3 className="font-semibold text-gray-900 mb-2">Análisis Profundo</h3>
               <p className="text-gray-600 text-sm">Análisis detallado del mercado con datos en tiempo real.</p>
             </div>

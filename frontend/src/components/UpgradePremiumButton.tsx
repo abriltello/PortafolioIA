@@ -26,14 +26,14 @@ const UpgradePremiumButton: React.FC<UpgradePremiumButtonProps> = ({
     setError(null);
 
     try {
-      console.log('📤 Enviando solicitud de upgrade...');
+      console.log('Enviando solicitud de upgrade...');
       
       // Llamar al backend para mejorar plan
       const respuesta = await api.post('/usuarios/mejorar-plan', {
         metodo_pago: 'tarjeta'
       });
 
-      console.log('✅ Upgrade exitoso:', respuesta.data);
+      console.log('Upgrade exitoso:', respuesta.data);
 
       // Mostrar mensaje de éxito
       setMensaje('¡Felicitaciones! Ya eres Premium 🎉');
@@ -51,7 +51,7 @@ const UpgradePremiumButton: React.FC<UpgradePremiumButtonProps> = ({
       setTimeout(() => setMensaje(null), 3000);
 
     } catch (err: any) {
-      console.error('❌ Error en upgrade:', err);
+      console.error('Error en upgrade:', err);
       
       const mensajeError =
         err.response?.data?.detail ||
@@ -69,7 +69,7 @@ const UpgradePremiumButton: React.FC<UpgradePremiumButtonProps> = ({
   if (isUserPremium) {
     return (
       <div className="flex items-center gap-2 px-4 py-2 bg-purple-100 border-2 border-purple-300 rounded-lg">
-        <span className="text-yellow-500 text-xl">⭐</span>
+        <i className="fas fa-crown text-yellow-500 text-xl"></i>
         <span className="font-bold text-purple-800">Premium Activo</span>
       </div>
     );
@@ -103,14 +103,14 @@ const UpgradePremiumButton: React.FC<UpgradePremiumButtonProps> = ({
       {/* Mostrar mensajes de éxito */}
       {mensaje && (
         <div className="bg-green-100 border-2 border-green-400 text-green-800 px-4 py-2 rounded">
-          ✅ {mensaje}
+          {mensaje}
         </div>
       )}
 
       {/* Mostrar mensajes de error */}
       {error && (
         <div className="bg-red-100 border-2 border-red-400 text-red-800 px-4 py-2 rounded">
-          ❌ {error}
+          {error}
         </div>
       )}
     </div>
