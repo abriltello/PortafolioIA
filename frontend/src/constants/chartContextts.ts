@@ -1,19 +1,8 @@
 /**
  * Chart Context Explanations
- * 
- * Educational content for charts adaptado to:
+ * * Educational content for charts adapted to:
  * 1. User experience level (beginner, intermediate, advanced)
  * 2. User risk profile (conservative, moderate, aggressive)
- * 
- * Each explanation helps users understand what data visualization means.
- * Beginners get more detailed explanations with simple language.
- * Intermediate users get balanced explanations.
- * Advanced users get concise, technical explanations.
- * 
- * Risk profiles have their own narrative:
- * - Conservative: Preservation and stability
- * - Moderate: Balanced growth with protection
- * - Aggressive: Maximum growth potential
  */
 
 export interface ContextExplanation {
@@ -47,20 +36,20 @@ export const chartContexts: ChartContexts = {
 
   'dashboard.distribution.description.conservative': {
     beginner: 'Tu cartera está diseñada para darte tranquilidad. La mayor parte de la gráfica (Renta Fija) representa activos seguros como bonos gubernamentales o depósitos a plazo. El objetivo es que tu dinero no pierda valor frente a la inflación, manteniendo un riesgo de pérdida mínimo. La pequeña porción de acciones es solo para darte un impulso extra sin poner en peligro tus ahorros principales.',
-    intermediate: 'Cartera conservadora enfocada en preservación del capital. La mayoría en renta fija (bonos, depósitos) con pequeña exposición a renta variable para crecimiento moderado.',
-    advanced: 'Conservative allocation: ~70% fixed income, ~30% equities. Principal preservation strategy with minimal drawdown risk.'
+    intermediate: 'Gráfica: Mayoría en renta fija (bonos, depósitos) ~70%, pequeña exposición en renta variable ~30%. Significa: Estrategia de preservación de capital con crecimiento controlado. Qué hacer: Mantén estos pesos rebalanceando anualmente.',
+    advanced: 'Conservative allocation: ~70% fixed income, ~30% equities. Principal preservation with minimal drawdown. Action: Maintain allocation discipline, rebalance annually.'
   },
 
   'dashboard.distribution.description.moderate': {
     beginner: 'Buscamos el mejor de los dos mundos. Como ves en la gráfica, combinamos la seguridad de los bonos (Renta Fija) con el potencial de las acciones (Renta Variable). Esta distribución permite que tu patrimonio crezca a mediano plazo, pero con un "colchón" de seguridad que amortigua las caídas naturales del mercado. Es ideal para quienes buscan ganancias sin perder el sueño por la volatilidad.',
-    intermediate: 'Cartera balanceada que busca crecimiento sostenido con protección. Mezcla de renta fija y variable permite captar upside del mercado con riesgo moderado.',
-    advanced: 'Moderate allocation: ~50% fixed income, ~50% equities. Balanced growth strategy with controlled volatility.'
+    intermediate: 'Gráfica: Balance 50/50 entre renta fija (bonos) y renta variable (acciones). Significa: Crecimiento moderado con volatilidad controlada. Qué hacer: Invierte según estos pesos. Rebalancea semestralmente.',
+    advanced: 'Moderate allocation: ~50% fixed income, ~50% equities. Balanced growth with controlled volatility. Action: Execute allocation, rebalance semi-annually.'
   },
 
   'dashboard.distribution.description.aggressive': {
     beginner: 'Esta cartera está construida para ganar. La predominancia de Renta Variable y activos dinámicos en la gráfica significa que estás priorizando la acumulación de riqueza a largo plazo. Debes entender que verás fluctuaciones frecuentes en los gráficos: esto es normal para obtener rendimientos altos. Estás posicionado para aprovechar al máximo las subidas del mercado tecnológico y global.',
-    intermediate: 'Cartera agresiva con énfasis en renta variable. Buscas máximo crecimiento a largo plazo aceptando volatilidad significativa en el corto plazo.',
-    advanced: 'Aggressive allocation: ~20% fixed income, ~80% equities. Maximum growth strategy accepting significant volatility.'
+    intermediate: 'Gráfica: Énfasis en renta variable ~80%, renta fija ~20%. Significa: Máximo crecimiento a largo plazo aceptando volatilidad alta. Qué hacer: Invierte según estos porcentajes. Rebalancea anualmente.',
+    advanced: 'Aggressive allocation: ~20% fixed income, ~80% equities. Maximum growth strategy with high volatility acceptance. Action: Maintain discipline over 5+ year horizon.'
   },
 
   'dashboard.distribution.tooltip': {
@@ -220,9 +209,6 @@ export const getChartContext = (
 
 /**
  * Helper: Get context by key, experience level, AND risk level
- * Useful for dashboard and other components that vary by risk profile
- * 
- * Usage: getChartContextByRisk('dashboard.distribution.description', 'conservative', 'beginner')
  */
 export const getChartContextByRisk = (
   baseKey: string,
@@ -232,7 +218,6 @@ export const getChartContextByRisk = (
   const level = experienceLevel || 'intermediate';
   const risk = riskLevel || 'moderate';
   
-  // Try to find risk-specific key first
   const riskKey = `${baseKey}.${risk}`;
   const context = chartContexts[riskKey];
   
@@ -241,7 +226,6 @@ export const getChartContextByRisk = (
     return contextObj[level as keyof ContextExplanation] || contextObj.intermediate;
   }
   
-  // Fallback to generic key if risk-specific not found
   return getChartContext(baseKey, experienceLevel);
 };
 
