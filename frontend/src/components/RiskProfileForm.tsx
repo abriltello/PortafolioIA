@@ -286,7 +286,7 @@ const RiskProfileForm: React.FC<RiskProfileFormProps> = ({ onPortfolioGenerated 
 
           {error && (
             <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg text-center">
-              ⚠️ {error}
+              Error: {error}
             </div>
           )}
 

@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { fetchStockData } from '../services/api';
+import { ChartInfoIcon } from '../components/ChartInfoIcon';
+import { EducationalTooltip } from '../components/EducationalTooltip';
+import { DataClarityBadge } from '../components/DataClarityBadge';
+import { useUserExperienceLevel } from '../hooks/useUserExperienceLevel';
+import { getChartContext } from '../constants/chartContextts';
 
 interface MyPortfolioPageProps {
   portfolio: any;
@@ -45,6 +50,7 @@ const MyPortfolioPage: React.FC<MyPortfolioPageProps> = ({ portfolio }) => {
   const [stocksData, setStocksData] = useState<Record<string, StockData>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const experienceLevel = useUserExperienceLevel();
 
   // Cargar datos de Yahoo Finance cuando cambie el portfolio
   useEffect(() => {
@@ -122,10 +128,16 @@ const MyPortfolioPage: React.FC<MyPortfolioPageProps> = ({ portfolio }) => {
 
         {/* Gráfico de Rendimiento */}
         <div className="mb-8 bg-white p-8 rounded-lg border border-gray-200 shadow-sm">
-          <h2 className="text-3xl font-bold text-blue-900 mb-6 flex items-center gap-3">
-            <i className="fas fa-chart-line text-blue-900"></i>
-            Rendimiento del Portafolio (Últimos 12 Meses)
-          </h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-3xl font-bold text-blue-900 flex items-center gap-3">
+              <i className="fas fa-chart-line text-blue-900"></i>
+              Rendimiento del Portafolio (Últimos 12 Meses)
+            </h2>
+            <div className="flex items-center gap-3">
+              <DataClarityBadge type="simulated" size="sm" />
+              <ChartInfoIcon label={getChartContext('portfolio.performance.title', experienceLevel)} />
+            </div>
+          </div>
         <ResponsiveContainer width="100%" height={300}>
           <AreaChart
             data={performanceData}
@@ -144,8 +156,8 @@ const MyPortfolioPage: React.FC<MyPortfolioPageProps> = ({ portfolio }) => {
             <YAxis stroke="#9ca3af" />
             <Tooltip
               contentStyle={{
-                backgroundColor: '#374151',
-                border: '1px solid #4b5563',
+                backgroundColor: '#1a237e',
+                border: '1px solid #0d47a1',
                 borderRadius: '8px',
                 color: '#e5e7eb'
               }}
@@ -159,6 +171,20 @@ const MyPortfolioPage: React.FC<MyPortfolioPageProps> = ({ portfolio }) => {
             />
           </AreaChart>
         </ResponsiveContainer>
+
+        {/* Explanation Text */}
+        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <p className="text-sm text-gray-700 leading-relaxed">
+            {getChartContext('portfolio.performance.description', experienceLevel)}
+          </p>
+        </div>
+
+        {/* Note about simulated data */}
+        <div className="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-3">
+          <p className="text-xs text-amber-800">
+            {getChartContext('portfolio.performance.note', experienceLevel)}
+          </p>
+        </div>
       </div>
 
       {/* Tabla de Holdings */}
@@ -167,6 +193,10 @@ const MyPortfolioPage: React.FC<MyPortfolioPageProps> = ({ portfolio }) => {
           <i className="fas fa-list text-blue-900"></i>
           Mis Activos
         </h2>
+        <div className="mb-3 flex gap-2 text-xs text-gray-500">
+          <DataClarityBadge type="real" size="sm" />
+          <span>Precios actuales del mercado</span>
+        </div>
         <div className="overflow-x-auto bg-white rounded-lg border border-gray-200">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-blue-50 border-b border-gray-200">
@@ -174,14 +204,32 @@ const MyPortfolioPage: React.FC<MyPortfolioPageProps> = ({ portfolio }) => {
                 <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">
                   <i className="fas fa-tag mr-2"></i>Ticker
                 </th>
-                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">
-                  <i className="fas fa-percentage mr-2"></i>Allocación
+                <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">
+                  <div className="flex items-center gap-2">
+                    <i className="fas fa-percentage mr-1"></i>
+                    <span>Allocación</span>
+                    <EducationalTooltip
+                      term=""
+                      explanation="Porcentaje de tu portafolio asignado a este activo."
+                      examples={['10% de $50,000 = $5,000 en este activo']}
+                      inline={true}
+                    />
+                  </div>
                 </th>
                 <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">
                   <i className="fas fa-dollar-sign mr-2"></i>Precio Actual
                 </th>
                 <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">
-                  <i className="fas fa-chart-bar mr-2"></i>P/L
+                  <div className="flex items-center gap-2">
+                    <i className="fas fa-chart-bar mr-1"></i>
+                    <span>Cambio Hoy</span>
+                    <EducationalTooltip
+                      term=""
+                      explanation="Cambio de precio de este activo desde el cierre del día anterior. (+) = ganancia, (-) = pérdida."
+                      examples={['Si subió 2.5% = +$25 en una posición de $1,000']}
+                      inline={true}
+                    />
+                  </div>
                 </th>
               </tr>
             </thead>

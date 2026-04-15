@@ -2,6 +2,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { ChartInfoIcon } from './ChartInfoIcon';
+import { EducationalTooltip } from './EducationalTooltip';
+import { useUserExperienceLevel } from '../hooks/useUserExperienceLevel';
+import { getChartContext, getChartContextByRisk } from '../constants/chartContextts';
 
 
 
@@ -17,6 +21,11 @@ interface DashboardOverviewProps {
 const DashboardOverview: React.FC<DashboardOverviewProps> = ({ portfolio, isUserPremium }) => {
   const navigate = useNavigate();
   const [showPremiumModal, setShowPremiumModal] = useState(false);
+  const experienceLevel = useUserExperienceLevel();
+  
+  // TODO: When backend persists risk_level in portfolio.metrics, update this:
+  // const riskLevel = useMemo(() => portfolio?.metrics?.risk_level || 'moderate', [portfolio?.metrics?.risk_level]);
+  const riskLevel: 'conservative' | 'moderate' | 'aggressive' = 'moderate';
 
   const handleViewStrategy = () => {
     if (!isUserPremium) {
@@ -91,12 +100,30 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ portfolio, isUser
           {/* Métricas Clave */}
           <div className="space-y-6">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Retorno Esperado Anual</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Retorno Esperado Anual</h3>
+                <EducationalTooltip
+                  term="Retorno"
+                  explanation="El porcentaje de ganancia promedio que esperas obtener en 1 año. Basado en datos históricos y tu perfil de riesgo."
+                  examples={['Retorno 8% = $10,000 invertidos → $10,800 expected', 'Retorno 12% = inversión más agresiva con más riesgo']}
+                  inline={true}
+                />
+              </div>
               <p className="text-4xl sm:text-5xl font-bold text-blue-900">{(metrics.expected_return * 100).toFixed(2)}%</p>
+              <p className="text-sm text-gray-500 mt-3">Proyección basada en análisis histórico</p>
             </div>
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Nivel de Riesgo</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Nivel de Riesgo</h3>
+                <EducationalTooltip
+                  term="Riesgo/Volatilidad"
+                  explanation="La fluctuación esperada del valor de tu portafolio. Mayor riesgo = mayor variación día a día, pero potencial de mayores ganancias."
+                  examples={['Riesgo 5% = cartera muy estable (conservadora)', 'Riesgo 25% = cartera con cambios significativos (agresiva)']}
+                  inline={true}
+                />
+              </div>
               <p className="text-4xl sm:text-5xl font-bold text-orange-600">{(metrics.risk * 100).toFixed(2)}%</p>
+              <p className="text-sm text-gray-500 mt-3">Desviación estándar anualizada</p>
             </div>
             <div className="mt-6">
               <button
@@ -110,7 +137,10 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ portfolio, isUser
 
           {/* Distribución de Activos */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-6">Distribución de Activos Recomendados</h3>
+            <div className="flex items-center gap-2 mb-6">
+              <h3 className="text-lg font-semibold text-gray-900">Distribución de Activos Recomendados</h3>
+              <ChartInfoIcon label={getChartContext('dashboard.distribution.title', experienceLevel)} />
+            </div>
             <div className="flex flex-col items-center gap-6">
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
@@ -120,6 +150,54 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ portfolio, isUser
                       cx="50%"
                       cy="50%"
                       labelLine={false}
+                      label={({ cx, cy, midAngle, innerRadius, outerRadius, name, value }) => {
+                        if (midAngle === undefined || name === undefined) return null;
+                        
+                        const RADIAN = Math.PI / 180;
+                        const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+                        const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                        const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                        
+                        const displayValue = typeof value === 'number' ? value.toFixed(1) : value;
+                        const shortName = name.length > 15 ? name.substring(0, 12) + '...' : name;
+                        const showFullLabel = value > 5;
+                        
+                        return (
+                          <g>
+                            <text 
+                              x={x} 
+                              y={y} 
+                              fill="white" 
+                              textAnchor={x > cx ? 'start' : 'end'} 
+                              dominantBaseline="central"
+                              fontSize="14"
+                              fontWeight="bold"
+                              paintOrder="stroke"
+                              stroke="#1a1a1a"
+                              strokeWidth="0.5"
+                            >
+                              {showFullLabel ? `${shortName}` : `${displayValue}%`}
+                            </text>
+                            
+                            {showFullLabel && (
+                              <text 
+                                x={x} 
+                                y={y + 16} 
+                                fill="white" 
+                                textAnchor={x > cx ? 'start' : 'end'} 
+                                dominantBaseline="central"
+                                fontSize="13"
+                                fontWeight="600"
+                                paintOrder="stroke"
+                                stroke="#1a1a1a"
+                                strokeWidth="0.4"
+                              >
+                                {displayValue}%
+                              </text>
+                            )}
+                          </g>
+                        );
+                      }}
                       outerRadius={100}
                       fill="#8884d8"
                       dataKey="value"
@@ -130,16 +208,40 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ portfolio, isUser
                     </Pie>
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: '#374151',
-                        border: '1px solid #4b5563',
-                        borderRadius: '8px',
-                        color: '#e5e7eb'
+                        backgroundColor: '#ffffff',
+                        border: '3px solid #003366',
+                        borderRadius: '12px',
+                        color: '#001a4d',
+                        fontWeight: '900',
+                        fontSize: '16px',
+                        padding: '16px 20px',
+                        boxShadow: '0 12px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 51, 102, 0.2)',
+                        maxWidth: '350px',
+                        whiteSpace: 'normal' as const,
+                        wordWrap: 'break-word' as const,
+                        lineHeight: '1.6'
                       }}
-                      formatter={(value) => `${value}%`}
+                      formatter={(value) => {
+                        const v = Array.isArray(value) ? value[0] : value;
+                        const num = typeof v === 'number' ? v : parseFloat(v);
+                        return isNaN(num) ? String(v) : num.toFixed(2) + '%';
+                      }}
+                      cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
+                      labelFormatter={() => getChartContext('dashboard.distribution.tooltip', experienceLevel)}
+                      labelStyle={{ color: '#003366', fontWeight: '900', fontSize: '16px', marginBottom: '8px', display: 'block' }}
+                      wrapperStyle={{ outline: 'none' }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
+              
+              {/* Explanation Text */}
+              <div className="w-full bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  {getChartContextByRisk('dashboard.distribution.description', riskLevel, experienceLevel)}
+                </p>
+              </div>
+
               <div className="space-y-3 sm:space-y-4 w-full">
                 {mainAssets.map((asset, index) => (
                   <div key={index} className="flex flex-col sm:flex-row items-center justify-between bg-gray-700 rounded-lg px-3 sm:px-4 py-2 sm:py-3 border border-gray-600 shadow-md gap-2 sm:gap-0">

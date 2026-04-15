@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { ChartInfoIcon } from '../components/ChartInfoIcon';
+import { EducationalTooltip } from '../components/EducationalTooltip';
+import { DataClarityBadge } from '../components/DataClarityBadge';
+import { useUserExperienceLevel } from '../hooks/useUserExperienceLevel';
+import { getChartContext } from '../constants/chartContextts';
+import { getSharpeRatioInterpretation } from '../utils/portfolioCalculations';
 
 interface SimulatorPageProps {
   portfolio: any;
@@ -134,6 +140,7 @@ const ASSET_TYPES: AssetType[] = [
 const getAssetButtonClasses = (selected: boolean) => selected ? 'p-4 rounded-lg border-2 transition-all duration-300 text-left border-blue-500 bg-blue-50 shadow-lg' : 'p-4 rounded-lg border transition-all duration-200 text-left border-gray-200 bg-white hover:border-gray-300';
 
 const SimulatorPage: React.FC<SimulatorPageProps> = ({ portfolio }) => {
+  const experienceLevel = useUserExperienceLevel();
   const [amount, setAmount] = useState(10000);
   const [horizon, setHorizon] = useState(12); // Meses
   const [riskAversion, setRiskAversion] = useState(50); // 0-100
@@ -376,7 +383,15 @@ const SimulatorPage: React.FC<SimulatorPageProps> = ({ portfolio }) => {
             <label htmlFor="riskAversion" className="block text-sm font-semibold text-gray-200 mb-3 flex items-center justify-between">
               <span className="flex items-center gap-2">
                 <i className="fas fa-shield-alt text-amber-400"></i>
-                Tolerancia al Riesgo
+                <span className="flex items-center gap-2">
+                  Tolerancia al Riesgo
+                  <EducationalTooltip
+                      term=""
+                    explanation="Cuánto riesgo estás dispuesto a aceptar. 0% = muy conservador, 100% = muy agresivo. Afecta la volatilidad esperada."
+                    examples={['0% = Protección máxima, ganancias bajas', '50% = Balance entre riesgo y retorno', '100% = Máximo potencial de ganancias pero volatilidad alta']}
+                    inline={true}
+                  />
+                </span>
               </span>
               <span className="text-amber-400 text-lg">{riskAversion}%</span>
             </label>
@@ -559,7 +574,15 @@ const SimulatorPage: React.FC<SimulatorPageProps> = ({ portfolio }) => {
                 </div>
                 <div className="bg-white p-4 rounded-lg border border-blue-50 text-center">
                   <i className="fas fa-balance-scale text-2xl text-blue-600 mb-2"></i>
-                  <p className="text-slate-500 text-xs mb-1">Sharpe Ratio</p>
+                  <div className="flex items-center justify-center gap-1 mb-1">
+                    <p className="text-slate-500 text-xs">Sharpe Ratio</p>
+                    <EducationalTooltip
+                      term=""
+                      explanation="Mide cuánto retorno estás obteniendo por cada unidad de riesgo. Mayor es mejor. Valores: <1=Pobre, 1-2=Bueno, 2-3=Muy Bueno, >3=Excepcional."
+                      examples={['Sharpe 0.5 = Bajo retorno para el riesgo asumido', 'Sharpe 2.5 = Excelente relación riesgo-retorno']}
+                      inline={true}
+                    />
+                  </div>
                   <p className="text-xl font-bold text-slate-900">{results.sharpeRatio.toFixed(2)}</p>
                 </div>
                 <div className="bg-white p-4 rounded-lg border border-blue-50 text-center">
@@ -580,10 +603,12 @@ const SimulatorPage: React.FC<SimulatorPageProps> = ({ portfolio }) => {
               <i className="fas fa-chart-line text-blue-600"></i>
               Proyección de Crecimiento
             </h2>
-            <div className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-lg border border-blue-100">
-              <i className="fas fa-info-circle text-blue-400"></i>
-              <span className="text-sm text-slate-500">Basado en 100 simulaciones Monte Carlo</span>
-            </div>
+            <DataClarityBadge type="simulated" size="sm" />
+          </div>
+          <div className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-lg border border-blue-100 mb-6">
+            <i className="fas fa-info-circle text-blue-400"></i>
+            <span className="text-sm text-slate-500">{getChartContext('simulator.projection.badge', experienceLevel)}</span>
+            <ChartInfoIcon label={getChartContext('simulator.projection.percentileInfo', experienceLevel)} />
           </div>
           
           <ResponsiveContainer width="100%" height={450}>
@@ -622,14 +647,14 @@ const SimulatorPage: React.FC<SimulatorPageProps> = ({ portfolio }) => {
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#ffffff',
-                  border: '2px solid #dbeafe',
+                  backgroundColor: '#1a237e',
+                  border: '2px solid #0d47a1',
                   borderRadius: '12px',
-                  color: '#0f172a',
+                  color: '#ffffff',
                   padding: '12px',
                   boxShadow: '0 10px 30px rgba(0,0,0,0.06)'
                 }}
-                labelStyle={{ color: '#1e88e5', fontWeight: 'bold', marginBottom: '8px' }}
+                labelStyle={{ color: '#90caf9', fontWeight: 'bold', marginBottom: '8px' }}
                 formatter={(value: any) => [`$${value.toLocaleString()}`, '']}
               />
               <Legend 
@@ -672,6 +697,13 @@ const SimulatorPage: React.FC<SimulatorPageProps> = ({ portfolio }) => {
             </LineChart>
           </ResponsiveContainer>
 
+          {/* Contextual explanation based on experience level */}
+          <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <p className="text-sm text-gray-700 leading-relaxed">
+              {getChartContext('simulator.projection.description', experienceLevel)}
+            </p>
+          </div>
+
           {/* Leyenda explicativa */}
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white p-4 rounded-lg border-2 border-green-100 hover:border-green-200 transition-all">
@@ -679,21 +711,21 @@ const SimulatorPage: React.FC<SimulatorPageProps> = ({ portfolio }) => {
                 <div className="w-8 h-1 bg-green-500"></div>
                 <span className="text-green-600 font-bold">Escenario Optimista</span>
               </div>
-              <p className="text-slate-500 text-xs">Top 10% de resultados - Condiciones favorables del mercado</p>
+              <p className="text-slate-500 text-xs">{getChartContext('simulator.projection.lineOptimistic', experienceLevel)}</p>
             </div>
             <div className="bg-white p-4 rounded-lg border-2 border-blue-100 hover:shadow-lg hover:shadow-blue-900/10 transition-all">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-8 h-1 bg-blue-500"></div>
                 <span className="text-blue-600 font-bold">Escenario Esperado</span>
               </div>
-              <p className="text-slate-500 text-xs">Promedio de todas las simulaciones - Resultado más probable</p>
+              <p className="text-slate-500 text-xs">{getChartContext('simulator.projection.lineExpected', experienceLevel)}</p>
             </div>
             <div className="bg-white p-4 rounded-lg border-2 border-red-100 hover:border-red-200 transition-all">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-8 h-1 bg-red-500"></div>
                 <span className="text-red-600 font-bold">Escenario Pesimista</span>
               </div>
-              <p className="text-slate-500 text-xs">Bottom 10% de resultados - Condiciones adversas del mercado</p>
+              <p className="text-slate-500 text-xs">{getChartContext('simulator.projection.linePessimistic', experienceLevel)}</p>
             </div>
           </div>
         </div>

@@ -19,7 +19,7 @@ const PremiumAlert: React.FC<PremiumAlertProps> = ({
   if (isUserPremium) {
     return (
       <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4 mb-4 flex items-center gap-3">
-        <span className="text-2xl">✅</span>
+        <i className="fas fa-check-circle text-2xl text-green-600"></i>
         <div>
           <h3 className="font-bold text-green-800">¡Eres Premium!</h3>
           <p className="text-sm text-green-700">Disfruta de funciones ilimitadas sin restricciones</p>
@@ -32,7 +32,7 @@ const PremiumAlert: React.FC<PremiumAlertProps> = ({
   return mostrarAlerta ? (
     <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4 mb-4 flex items-center justify-between gap-3">
       <div className="flex items-center gap-3">
-        <span className="text-2xl">⚠️</span>
+        <i className="fas fa-exclamation-circle text-2xl text-amber-600"></i>
         <div>
           <h3 className="font-bold text-yellow-800">Plan Gratuito - Límite Alcanzado</h3>
           <p className="text-sm text-yellow-700">

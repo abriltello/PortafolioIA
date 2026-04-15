@@ -7,7 +7,7 @@ interface CancelPremiumButtonProps {
 }
 
 /**
- * ❌ Componente con botón para cancelar el plan Premium
+ * Componente con botón para cancelar el plan Premium
  * Hace una llamada al backend (/api/usuarios/cancelar-plan)
  * Actualiza el estado local sin necesidad de recargar la página
  */
@@ -28,12 +28,12 @@ const CancelPremiumButton: React.FC<CancelPremiumButtonProps> = ({
     setShowConfirm(false);
 
     try {
-      console.log('📤 Enviando solicitud de cancelación de plan...');
+      console.log('Enviando solicitud de cancelación de plan...');
       
       // Llamar al backend para cancelar plan
       const respuesta = await api.post('/usuarios/cancelar-plan');
 
-      console.log('✅ Cancelación exitosa:', respuesta.data);
+      console.log('Cancelación exitosa:', respuesta.data);
 
       // Mostrar mensaje de éxito
       setMensaje('Tu plan Premium ha sido cancelado');
@@ -51,7 +51,7 @@ const CancelPremiumButton: React.FC<CancelPremiumButtonProps> = ({
       setTimeout(() => setMensaje(null), 3000);
 
     } catch (err: any) {
-      console.error('❌ Error en cancelación:', err);
+      console.error('Error en cancelación:', err);
       
       const mensajeError =
         err.response?.data?.detail ||

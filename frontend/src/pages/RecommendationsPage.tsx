@@ -1,22 +1,24 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Label } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { ChartInfoIcon } from '../components/ChartInfoIcon';
+import { EducationalTooltip } from '../components/EducationalTooltip';
+import { useUserExperienceLevel } from '../hooks/useUserExperienceLevel';
+import { getChartContext } from '../constants/chartContextts';
+import { percentToMoney } from '../utils/portfolioCalculations';
 
 
 
 const COLORS = ['#003366', '#0056b3', '#0077cc', '#0099ff', '#1e88e5', '#1565c0', '#1976d2', '#1e8449', '#2e7d32', '#388e3c'];
-
-// Función personalizada para renderizar labels del gráfico con texto blanco
-const renderLabel = (entry: any) => {
-  return `${entry.name}: ${entry.value.toFixed(2)}%`;
-};
 
 interface RecommendationsPageProps {
   portfolio: any;
 }
 
 const RecommendationsPage: React.FC<RecommendationsPageProps> = ({ portfolio }) => {
+  const experienceLevel = useUserExperienceLevel();
+  
   // Si no hay portafolio, muestra mensaje
   if (!portfolio) {
     return (
@@ -57,14 +59,28 @@ const RecommendationsPage: React.FC<RecommendationsPageProps> = ({ portfolio }) 
       ...extraAssets.filter(a => !names.includes(a.name)).slice(0, 8 - recommendedAssets.length)
     ];
   }
-  const riskLevel = portfolio?.profile?.risk_level ?? portfolio?.risk_level ?? 'medium';
-  // Puedes adaptar el perfil de inversor según los datos del portafolio si lo tienes
-  const investorProfile = portfolio.profile ?? {
-    name: 'Personalizado',
-    description: 'Portafolio generado según tu última encuesta.',
-    color: 'teal',
-    icon: 'fa-balance-scale'
+  const riskLevel = portfolio?.profile?.risk_level ?? portfolio?.risk_level ?? 'moderate';
+  
+  // Mapear risk level a perfiles localizados con descripciones
+  const getRiskProfileData = (risk: string) => {
+    const profiles: Record<string, { name: string; description: string }> = {
+      conservative: {
+        name: 'Conservador',
+        description: 'Tu cartera está diseñada para darte tranquilidad. Con predominancia en Renta Fija, priorizas la preservación del capital y la estabilidad a largo plazo, minimizando riesgos de volatilidad.'
+      },
+      moderate: {
+        name: 'Moderado',
+        description: 'Buscas el mejor de los dos mundos: crecimiento y protección. Tu cartera equilibra Renta Fija y Variable, capturando oportunidades del mercado con un colchón de estabilidad.'
+      },
+      aggressive: {
+        name: 'Agresivo',
+        description: 'Esta cartera está construida para ganar. Priorizas la acumulación de riqueza a largo plazo con alta exposición a Renta Variable, aceptando volatilidad significativa para máximo crecimiento.'
+      }
+    };
+    return profiles[risk.toLowerCase()] || profiles.moderate;
   };
+
+  const investorProfile = getRiskProfileData(riskLevel);
   const pieChartData = recommendedAssets.map((asset: any) => ({
     name: asset.name,
     value: asset.allocation_pct ?? 0,
@@ -88,11 +104,11 @@ const RecommendationsPage: React.FC<RecommendationsPageProps> = ({ portfolio }) 
           <div className="flex items-center gap-3 mb-4">
             <h2 className="text-2xl font-bold text-blue-900">Tu Perfil de Inversor</h2>
           </div>
-          <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
-            <h3 className="text-2xl font-bold text-blue-900 mb-4">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
+            <h3 className="text-2xl font-bold text-blue-900 mb-2">
               Perfil {investorProfile.name}
             </h3>
-            <p className="text-gray-700 leading-relaxed">
+            <p className="text-gray-700 leading-relaxed text-lg">
               {investorProfile.description}
             </p>
           </div>
@@ -103,35 +119,62 @@ const RecommendationsPage: React.FC<RecommendationsPageProps> = ({ portfolio }) 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Resumen y métricas */}
             <div>
-              <h2 className="text-2xl font-semibold text-white mb-4">Resumen de la Estrategia</h2>
+              <h2 className="text-2xl font-semibold text-blue-900 mb-4">Resumen de la Estrategia</h2>
               <p className="text-slate-600 mb-6 leading-relaxed">
                 Diversificación en múltiples instrumentos financieros para maximizar el potencial de retorno y reducir riesgos.
               </p>
               <div className="bg-white p-6 rounded-lg mb-6 border-2 border-blue-100">
                 <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
                   <i className="fas fa-chart-line text-blue-600"></i>
-                  Métricas Clave del Portafolio
+                  <span>Métricas Clave del Portafolio</span>
+                  <EducationalTooltip
+                    term=""
+                    explanation="Estas métricas muestran los números clave de tu portafolio. El Retorno es cuánto esperas ganar, y el Riesgo es cuánto pueden fluctuar tus inversiones."
+                    inline={true}
+                  />
                 </h3>
                 <div className="space-y-3">
                   <p className="text-gray-200 flex items-center justify-between">
                     <span className="flex items-center gap-2">
                       <i className="fas fa-arrow-up text-blue-600"></i>
-                      Retorno Esperado Anual:
+                      <span className="flex items-center gap-1">
+                        Retorno Esperado Anual:
+                        <EducationalTooltip
+                          term=""
+                          explanation="El porcentaje de ganancia que esperas anualmente basado en tu perfil."
+                          inline={true}
+                        />
+                      </span>
                     </span>
                     <span className="font-bold text-blue-600 text-xl">{(metrics.expected_return * 100).toFixed(2)}%</span>
                   </p>
                   <p className="text-gray-200 flex items-center justify-between">
                     <span className="flex items-center gap-2">
                       <i className="fas fa-exclamation-triangle text-amber-400"></i>
-                      Riesgo (Volatilidad):
+                      <span className="flex items-center gap-1">
+                        Riesgo (Volatilidad):
+                        <EducationalTooltip
+                          term=""
+                          explanation="La fluctuación esperada. Mayor % = inversiones más volátiles pero potencial de mayores ganancias."
+                          inline={true}
+                        />
+                      </span>
                     </span>
                     <span className="font-bold text-amber-400 text-xl">{(metrics.risk * 100).toFixed(2)}%</span>
                   </p>
                 </div>
               </div>
 
-              <h3 className="text-xl font-semibold text-white mb-4">Activos Recomendados</h3>
-                <p className="text-gray-400 mb-2 text-sm">Mostrando {recommendedAssets.length} activos recomendados según tu perfil de riesgo ({riskLevel}).</p>
+              <h3 className="text-xl font-semibold text-blue-900 mb-4">Activos Recomendados</h3>
+                <p className="text-gray-400 mb-3 text-sm flex items-center gap-2">
+                  <span>Mostrando {recommendedAssets.length} activos recomendados según tu perfil de riesgo ({riskLevel}).</span>
+                  <EducationalTooltip
+                    term=""
+                    explanation="La asignación % se traduce a dinero real según cuánto inviertas. Ej: 30% de $10,000 = $3,000."
+                    examples={['Si inviertes $10,000: Apple 10% = $1,000', 'Si inviertes $50,000: Apple 10% = $5,000']}
+                    inline={true}
+                  />
+                </p>
               <div className="max-h-[420px] overflow-y-auto pr-2">
                 <ul className="divide-y divide-slate-200">
                   {recommendedAssets.map((asset: any, index: number) => (
@@ -144,7 +187,12 @@ const RecommendationsPage: React.FC<RecommendationsPageProps> = ({ portfolio }) 
                         </div>
                         <span className="text-blue-600 font-bold text-lg">{(asset.allocation_pct ?? 0).toFixed(2)}%</span>
                       </div>
-                      {asset.reason && <p className="text-slate-600 text-sm mt-1 leading-relaxed">{asset.reason}</p>}
+                      <div className="flex items-center gap-2 text-xs text-slate-500 mb-2">
+                        <span>Si inviertes $10,000: ~{percentToMoney(asset.allocation_pct ?? 0, 10000)}</span>
+                        <span className="text-gray-400">|</span>
+                        <span>Si inviertes $50,000: ~{percentToMoney(asset.allocation_pct ?? 0, 50000)}</span>
+                      </div>
+                      {asset.reason && <p className="text-slate-600 text-sm leading-relaxed">{asset.reason}</p>}
                     </li>
                   ))}
                 </ul>
@@ -153,7 +201,10 @@ const RecommendationsPage: React.FC<RecommendationsPageProps> = ({ portfolio }) 
 
             {/* Gráfico de Distribución de Activos */}
             <div>
-              <h2 className="text-2xl font-semibold text-slate-900 mb-6">Distribución de Activos</h2>
+              <div className="flex items-center gap-2 mb-6">
+                <h2 className="text-2xl font-semibold text-slate-900">Distribución de Activos</h2>
+                <ChartInfoIcon label={getChartContext('recommendations.distribution.title', experienceLevel)} />
+              </div>
               <div className="bg-white p-6 rounded-lg border-2 border-blue-100">
                 <ResponsiveContainer width="100%" height={400}>
                   <PieChart>
@@ -163,22 +214,60 @@ const RecommendationsPage: React.FC<RecommendationsPageProps> = ({ portfolio }) 
                       cy="50%"
                       labelLine={false}
                       label={({ cx, cy, midAngle, innerRadius, outerRadius, name, value }) => {
+                        if (midAngle === undefined || name === undefined) return null;
+                        
                         const RADIAN = Math.PI / 180;
                         const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
                         const x = cx + radius * Math.cos(-midAngle * RADIAN);
                         const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                        
+                        // Mostrar nombre corto y porcentaje, o solo porcentaje si el segmento es pequeño
+                        const displayValue = typeof value === 'number' ? value.toFixed(1) : value;
+                        const shortName = name.length > 15 ? name.substring(0, 12) + '...' : name;
+                        const showFullLabel = value > 5; // Solo mostrar nombre completo si > 5%
+                        
                         return (
-                          <text 
-                            x={x} 
-                            y={y} 
-                            fill="white" 
-                            textAnchor={x > cx ? 'start' : 'end'} 
-                            dominantBaseline="central"
-                            fontSize="12"
-                            fontWeight="bold"
-                          >
-                            {name}: {typeof value === 'number' ? value.toFixed(2) : value}%
-                          </text>
+                          <g>
+                            {/* Sombra de fondo para mejor legibilidad */}
+                            <filter x="-50%" y="-50%" width="200%" height="200%">
+                              <feGaussianBlur in="SourceGraphic" stdDeviation="2"/>
+                            </filter>
+                            
+                            {/* Texto principal mejorado */}
+                            <text 
+                              x={x} 
+                              y={y} 
+                              fill="white" 
+                              textAnchor={x > cx ? 'start' : 'end'} 
+                              dominantBaseline="central"
+                              fontSize="14"
+                              fontWeight="bold"
+                              paintOrder="stroke"
+                              stroke="#1a1a1a"
+                              strokeWidth="0.5"
+                              style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}
+                            >
+                              {showFullLabel ? `${shortName}` : `${displayValue}%`}
+                            </text>
+                            
+                            {/* Porcentaje en segunda línea si hay espacio */}
+                            {showFullLabel && (
+                              <text 
+                                x={x} 
+                                y={y + 16} 
+                                fill="white" 
+                                textAnchor={x > cx ? 'start' : 'end'} 
+                                dominantBaseline="central"
+                                fontSize="13"
+                                fontWeight="600"
+                                paintOrder="stroke"
+                                stroke="#1a1a1a"
+                                strokeWidth="0.4"
+                              >
+                                {displayValue}%
+                              </text>
+                            )}
+                          </g>
                         );
                       }}
                       outerRadius={140}
@@ -191,23 +280,37 @@ const RecommendationsPage: React.FC<RecommendationsPageProps> = ({ portfolio }) 
                     </Pie>
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: '#1e40af',
-                        border: '2px solid #ffffff',
-                        borderRadius: '8px',
-                        color: '#ffffff',
-                        fontWeight: 'bold',
-                        padding: '8px 12px',
-                        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)'
+                        backgroundColor: '#ffffff',
+                        border: '3px solid #003366',
+                        borderRadius: '12px',
+                        color: '#001a4d',
+                        fontWeight: '900',
+                        fontSize: '16px',
+                        padding: '16px 20px',
+                        boxShadow: '0 12px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 51, 102, 0.2)',
+                        maxWidth: '350px',
+                        whiteSpace: 'normal' as const,
+                        wordWrap: 'break-word' as const,
+                        lineHeight: '1.6'
                       }}
                       formatter={(value) => {
                         const v = Array.isArray(value) ? value[0] : value;
                         const num = typeof v === 'number' ? v : parseFloat(v);
                         return isNaN(num) ? String(v) : num.toFixed(2) + '%';
                       }}
-                      labelStyle={{ color: '#ffffff', fontWeight: 'bold' }}
+                      labelStyle={{ color: '#003366', fontWeight: '900', fontSize: '16px', marginBottom: '8px', display: 'block' }}
+                      wrapperStyle={{ outline: 'none' }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
+
+                {/* Explanation Text */}
+                <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <p className="text-sm text-gray-700 leading-relaxed">
+                    {getChartContext('recommendations.distribution.description', experienceLevel)}
+                  </p>
+                </div>
+
                 <div className="mt-6 space-y-2">
                   {pieChartData.map((entry: any, index: number) => (
                     <div key={index} className="flex items-center justify-between">
