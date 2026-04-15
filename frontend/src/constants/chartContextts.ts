@@ -46,21 +46,21 @@ export const chartContexts: ChartContexts = {
   },
 
   'dashboard.distribution.description.conservative': {
-    beginner: 'Tu cartera está diseñada para darte tranquilidad. La mayor parte de la gráfica (Renta Fija) representa activos seguros como bonos gubernamentales o depósitos a plazo. El objetivo es que tu dinero no pierda valor frente a la inflación, manteniendo un riesgo de pérdida mínimo. La pequeña porción de acciones es solo para darte un impulso extra sin poner en peligro tus ahorros principales.',
-    intermediate: 'Cartera conservadora enfocada en preservación del capital. La mayoría en renta fija (bonos, depósitos) con pequeña exposición a renta variable para crecimiento moderado.',
-    advanced: 'Conservative allocation: ~70% fixed income, ~30% equities. Principal preservation strategy with minimal drawdown risk.'
+    beginner: 'Gráfica: Los colores azules (Renta Fija) representan inversiones seguras como bonos y depósitos. La pequeña porción de acciones (verde/naranja) agrega un poco de crecimiento. Significa: Priorizas la protección de tu dinero sobre rentabilidad alta. Qué hacer: Invierte según estos porcentajes. Revisa anualmente. Si el mercado cae 20%, es normal—mantén tu estrategia sin vender en pánico.',
+    intermediate: 'Gráfica: Mayoría en renta fija (bonos, depósitos) ~70%, pequeña exposición en renta variable ~30%. Significa: Estrategia de preservación de capital con crecimiento controlado. Qué hacer: Mantén estos pesos rebalanceando anualmente. Las caídas del 5-10% son esperadas y normales.',
+    advanced: 'Conservative allocation: ~70% fixed income, ~30% equities. Principal preservation with minimal drawdown. Action: Maintain allocation discipline, rebalance annually. Accept 5-10% downside as normal market behavior.'
   },
 
   'dashboard.distribution.description.moderate': {
-    beginner: 'Buscamos el mejor de los dos mundos. Como ves en la gráfica, combinamos la seguridad de los bonos (Renta Fija) con el potencial de las acciones (Renta Variable). Esta distribución permite que tu patrimonio crezca a mediano plazo, pero con un "colchón" de seguridad que amortigua las caídas naturales del mercado. Es ideal para quienes buscan ganancias sin perder el sueño por la volatilidad.',
-    intermediate: 'Cartera balanceada que busca crecimiento sostenido con protección. Mezcla de renta fija y variable permite captar upside del mercado con riesgo moderado.',
-    advanced: 'Moderate allocation: ~50% fixed income, ~50% equities. Balanced growth strategy with controlled volatility.'
+    beginner: 'Gráfica: Mitad azul (inversiones seguras = bonos) y mitad verde/naranja (acciones con más riesgo). Significa: Buscas crecer tu dinero manteniendo control del riesgo. Qué hacer: Invierte según estos porcentajes. Revisa cada 3 meses. Si las acciones bajan 15%, es normal—mantén la estrategia.',
+    intermediate: 'Gráfica: Balance 50/50 entre renta fija (bonos) y renta variable (acciones). Significa: Crecimiento moderado con volatilidad controlada. Qué hacer: Invierte según estos pesos. Rebalancea semestralmente. Caídas del 15-20% son esperadas; evita decisiones emocionales.',
+    advanced: 'Moderate allocation: ~50% fixed income, ~50% equities. Balanced growth with controlled volatility. Action: Execute allocation, rebalance semi-annually. Target 8-10% annual return; expect 15-20% drawdowns as normal.'
   },
 
   'dashboard.distribution.description.aggressive': {
-    beginner: 'Esta cartera está construida para ganar. La predominancia de Renta Variable y activos dinámicos en la gráfica significa que estás priorizando la acumulación de riqueza a largo plazo. Debes entender que verás fluctuaciones frecuentes en los gráficos: esto es normal para obtener rendimientos altos. Estás posicionado para aprovechar al máximo las subidas del mercado tecnológico y global.',
-    intermediate: 'Cartera agresiva con énfasis en renta variable. Buscas máximo crecimiento a largo plazo aceptando volatilidad significativa en el corto plazo.',
-    advanced: 'Aggressive allocation: ~20% fixed income, ~80% equities. Maximum growth strategy accepting significant volatility.'
+    beginner: 'Gráfica: Mayoría en acciones dinámicas (verde/naranja) ~80%, poco en bonos (azul) ~20%. Significa: Priorizas crecimiento a largo plazo aceptando fluctuaciones significativas. Qué hacer: Mantén tu plan por 5+ años. Caídas de 20-30% son normales en mercados bajistas. No vendas en pánico cuando baje.',
+    intermediate: 'Gráfica: Énfasis en renta variable ~80%, renta fija ~20%. Significa: Máximo crecimiento a largo plazo aceptando volatilidad alta. Qué hacer: Invierte según estos porcentajes. Rebalancea anualmente. Espera caídas de 20-30% en ciclos bajistas; esto es parte de la estrategia.',
+    advanced: 'Aggressive allocation: ~20% fixed income, ~80% equities. Maximum growth strategy with high volatility acceptance. Action: Maintain discipline over 5+ year horizon. Target 12-15% annual return; 20-30% drawdowns are expected and normal.'
   },
 
   'dashboard.distribution.tooltip': {
