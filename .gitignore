@@ -33,4 +33,4 @@ __pycache__/
 
 *.db
 backend/*.db
-portafolioai.db
+portafolioai.db 
